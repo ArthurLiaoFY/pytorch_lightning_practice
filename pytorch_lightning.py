@@ -148,10 +148,10 @@ dataset_sizes['test'] = len(test_dataset.img_path)
 # %%
 
 cross_entropy = nn.CrossEntropyLoss()
-class LitModel(pl.LightningModule):
-    def __init__(self):
+class VGGModel(nn.Module):
+    def __init__(self, n_class):
         super().__init__()
-        self.n_class = 102
+        self.n_class = n_class
         self.VGG = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
         num_ftrs = self.VGG.classifier[0].in_features
         Multilayer_fc = nn.Sequential(
@@ -166,6 +166,12 @@ class LitModel(pl.LightningModule):
             self.VGG(x),
             dim=0
         )
+    
+class LitModel(pl.LightningModule):
+    def __init__(self):
+        super().__init__()
+        self.n_class = 102
+        self.VGG = VGGModel(self.n_class)
 
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -186,12 +192,12 @@ class LitModel(pl.LightningModule):
 # %%
 
 
-trainer = pl.Trainer(max_epochs=1)
+trainer = pl.Trainer(max_epochs=100)
 model = LitModel()
 
-trainer.fit(model, train_dataloaders=train_dataloader)
-trainer.validate(model, train_dataloaders=valid_dataloader)
-trainer.test(model, train_dataloaders=test_dataloader)
+# trainer.fit(model, train_dataloaders=train_dataloader)
+# trainer.validate(model, train_dataloaders=valid_dataloader)
+# trainer.test(model, train_dataloaders=test_dataloader)
 
 # %%
 a, b = next(iter(train_dataloader))
