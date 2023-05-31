@@ -147,7 +147,7 @@ dataset_sizes['test'] = len(test_dataset.img_path)
 # os.environ['WANDB_API_KEY'] = '0782b0393bbac75f7c807f3586ea3c56fc52ca53'
 # %%
 
-criterion = nn.CrossEntropyLoss()
+cross_entropy = nn.CrossEntropyLoss()
 class LitModel(pl.LightningModule):
     def __init__(self):
         super().__init__()
@@ -170,14 +170,14 @@ class LitModel(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = criterion(y_hat, y)
+        loss = cross_entropy(y_hat, y)
         return loss
 
-    # def validation_step(self, batch, batch_idx):
-    #     x, y = batch
-    #     y_hat = self(x)
-    #     loss = F.cross_entropy(y_hat, y)
-    #     return loss
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        y_hat = self(x)
+        loss = cross_entropy(y_hat, y)
+        return loss
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=0.02)
@@ -190,6 +190,8 @@ trainer = pl.Trainer(max_epochs=1)
 model = LitModel()
 
 trainer.fit(model, train_dataloaders=train_dataloader)
+trainer.validate(model, train_dataloaders=valid_dataloader)
+trainer.test(model, train_dataloaders=test_dataloader)
 
 # %%
 a, b = next(iter(train_dataloader))
