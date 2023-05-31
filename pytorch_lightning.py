@@ -51,7 +51,7 @@ config = {
     'epochs': 100,
     'n_class': 102,
     'vgg_resize_shape': 224,
-    'vgg_mean_transform':[0.48235, 0.45882, 0.40784]
+    'vgg_mean_transform':[0.48235, 0.45882, 0.40784],
     'vgg_std_transform':[0.00392156862745098, 0.00392156862745098, 0.00392156862745098]
 }
 # %%
