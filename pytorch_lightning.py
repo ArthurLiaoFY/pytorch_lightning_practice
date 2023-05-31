@@ -50,34 +50,35 @@ config = {
     'batch': 32,
     'epochs': 100,
     'n_class': 102,
-    'resize_shape': 224,
+    'vgg_resize_shape': 224,
+    'vgg_mean_transform':[0.48235, 0.45882, 0.40784]
+    'vgg_std_transform':[0.00392156862745098, 0.00392156862745098, 0.00392156862745098]
 }
 # %%
 data_transforms = {
     'train': transforms.Compose([
-        transforms.Resize((config['resize_shape'],config['resize_shape'])),
+        transforms.Resize((config['vgg_resize_shape'],config['vgg_resize_shape'])),
         ####################
         # augmentation
         transforms.RandomHorizontalFlip(),
         transforms.RandomVerticalFlip(),        
         transforms.RandomRotation(30,),
-        transforms.RandomCrop(config['resize_shape']),
+        transforms.RandomCrop(config['vgg_resize_shape']),
         ####################
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=config['vgg_mean_transform'], std=config['vgg_std_transform']),
     ]),
     'valid': transforms.Compose([
-        transforms.Resize((config['resize_shape'],config['resize_shape'])),
+        transforms.Resize((config['vgg_resize_shape'],config['vgg_resize_shape'])),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=config['vgg_mean_transform'], std=config['vgg_std_transform']),
     ]),
     'test': transforms.Compose([
         transforms.Resize((config['resize_shape'],config['resize_shape'])),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=config['vgg_mean_transform'], std=config['vgg_std_transform']),
     ]),
 }
-
 # %%
 
 class BirdDataset(Dataset):
@@ -101,7 +102,9 @@ class BirdDataset(Dataset):
         return len(self.img_path)
 
     def __getitem__(self, idx):
+        # should divide by 255
         image = Image.open(self.img_path[idx])
+        # should not change the label
         label = torch.tensor(self.img_label[idx], dtype=torch.long) - 1
         image = self.img_transform[self.dataset](image)
 
@@ -126,6 +129,7 @@ class BirdDatasetTest(Dataset):
         return len(self.img_path)
 
     def __getitem__(self, idx):
+        # should divide by 255
         image = Image.open(self.img_path[idx])
         image = self.img_transform[self.dataset](image)
         
