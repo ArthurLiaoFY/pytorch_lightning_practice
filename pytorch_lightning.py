@@ -137,7 +137,7 @@ valid_dataset = BirdDataset(dataset='valid', img_transform=data_transforms)
 test_dataset = BirdDatasetTest(dataset='test', img_transform=data_transforms)
 
 train_dataloader = DataLoader(train_dataset, batch_size=config['batch'], shuffle=True, pin_memory=True)
-valid_dataloader = DataLoader(valid_dataset, batch_size=config['batch'], shuffle=True, pin_memory=True)
+valid_dataloader = DataLoader(valid_dataset, batch_size=config['batch'], shuffle=False, pin_memory=True)
 test_dataloader = DataLoader(test_dataset, batch_size=config['batch'], shuffle=False, pin_memory=True)
 
 dataset_sizes={}
