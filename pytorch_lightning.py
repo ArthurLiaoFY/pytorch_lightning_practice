@@ -151,19 +151,17 @@ dataset_sizes['test'] = len(test_dataset.img_path)
 # os.environ['WANDB_API_KEY'] = '0782b0393bbac75f7c807f3586ea3c56fc52ca53'
 # %%
 
+
 cross_entropy = nn.CrossEntropyLoss()
 class VGGModel(nn.Module):
     def __init__(self, n_class):
         super().__init__()
         self.n_class = n_class
         self.VGG = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
-        num_ftrs = self.VGG.classifier[0].in_features
-        Multilayer_fc = nn.Sequential(
-            nn.Linear(num_ftrs, 512),
-            nn.ReLU(inplace=True),
-            nn.Linear(512, self.n_class)
-        )
-        self.VGG.classifier = Multilayer_fc
+        # freeze some parameters from training
+        for pram in VGG.features.parameters():
+            pram.requires_grad = False
+        # keep classifier parameters un-freeze
 
     def forward(self, x):
         return torch.softmax(
@@ -191,6 +189,7 @@ class LitModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=0.02)
+
 
 
 # %%
