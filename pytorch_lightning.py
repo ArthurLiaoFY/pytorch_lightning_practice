@@ -159,7 +159,7 @@ class VGGModel(nn.Module):
         self.n_class = n_class
         self.VGG = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
         # freeze some parameters from training
-        for pram in VGG.features.parameters():
+        for pram in self.VGG.features.parameters():
             pram.requires_grad = False
         # keep classifier parameters un-freeze
 
@@ -202,8 +202,4 @@ model = LitModel()
 # trainer.validate(model, train_dataloaders=valid_dataloader)
 # trainer.test(model, train_dataloaders=test_dataloader)
 
-# %%
-a, b = next(iter(train_dataloader))
-print(a.shape)
-print(b.shape)
-# %%
+
